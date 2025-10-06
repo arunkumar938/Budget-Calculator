@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BudgetWise</title>
+  <link rel="shortcut icon" href="https://static.vecteezy.com/system/resources/thumbnails/009/368/931/small_2x/icon-3d-cartoon-style-design-coins-calculator-and-icon-business-investments-money-savings-budget-management-and-financial-profit-concept-png.png" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+<h1 id="welcome">Welcome</h1>
+  <div class="container text-center py-5">
+    <h1 class="text-center"> BudgetWise</h1>
+    <button class="btn btn-danger" onclick="logout()">Logout</button>
+    <hr style="margin-left: 50px;">
+    <div class="row justify-content-center">
+
+      <div class="col-sm-4">
+        <div style="background-color: azure;">
+          <h5>Total Balance</h5>
+          <h4 id="addincome"></h4>
+        </div>
+        <h2 class="text-success">Add Income</h2><br>
+        <hr>
+        <div>
+          <input id="inctype" type="text" placeholder="Enter Income Type" class="form-control"><br>
+          <input id="incamount" type="text" placeholder="Enter Amount" class="form-control"><br>
+          <button onclick="income()" class="btn btn-primary form-control">Add Income</button>
+        </div>
+      </div>
+
+
+      <div class="col-md-1"></div>
+
+      <div class="col-sm-4">
+        <div style="background-color: azure;">
+          <h5>Total Expense</h5>
+          <h4 id="addexpence"></h4>
+        </div>
+        <h2 class="text-success">Add Expense</h2><br>
+        <hr>
+        <div>
+          <input id="exptype" type="text" placeholder="Enter Expense Type" class="form-control"><br>
+          <input id="expamt" type="text" placeholder="Enter Amount" class="form-control"><br>
+          <button onclick=" expense()" class="btn btn-primary form-control">Add Expense</button>
+        </div>
+      </div>
+    </div><br><br>
+    <button onclick="clearall()" class="btn btn-warning mt-4">Clear All</button>
+  </div>
+
+<!-- Income vs Expense -->
+  <div class="row">
+        <div class="col-6">
+            <table class="table table-bordered text-center">
+                <h2 class="text-center" style="color: #000000;">All Income</h2>
+                <thead>
+                    <tr>
+                <th style="color: #000000;">Date</th>
+                <th style="color: #000000;">Type</th>
+                <th style="color: #000000;">Amount</th>
+                </tr>   
+                </thead>
+                <tbody id="allIncome"></tbody>                    
+            </table>
+        </div>
+        <div class="col-6 ">
+            <table class="table table-bordered text-center">
+                <h2 class="text-center" style="color: #000000;">All Expense</h2>
+                <thead>
+                    <tr>
+                <th style="color: #000000;">Date</th>
+                <th style="color: #000000;">Type</th>
+                <th style="color: #000000;">Amount</th>
+                <th style="color: #000000;">Balance</th>
+                </tr>   
+                </thead>
+                <tbody id="allExpense"></tbody>                    
+            </table>
+        </div>
+    </div>
+
+  <script>
+
+    let totalIncome = 0;
+    let totalExpense = 0;
+
+    function updateDisplay() {
+      document.getElementById("addincome").innerHTML = totalIncome;
+      document.getElementById("addexpence").innerHTML = totalExpense;
+      document.getElementById("balance").innerHTML = totalIncome - totalExpense;
+    }
+
+    function income() {
+      const income = {
+        IncomeType: inctype.value,
+        IncomeAmount: parseFloat(incamount.value)
+      }
+
+      if (income.IncomeType == "" || income.IncomeAmount <= 0) {
+        alert("Please fill the form correctly");
+        return;
+      }
+
+      totalIncome += income.IncomeAmount;
+
+      localStorage.setItem("totalIncome", totalIncome);
+      // inctype.value = ""
+      // incamount.value = ""
+      
+      alert("Income added successfully");
+
+      const now = new Date();
+    const dateStr = now.toLocaleString();
+    const row = document.createElement("tr");
+    row.innerHTML = `<td style="color: black;">${dateStr}</td>
+                     <td style="color: black;">${income.IncomeType}</td>
+                     <td style="color: black;">₹${income.IncomeAmount}</td>`;
+    document.getElementById("allIncome").appendChild(row);
+
+    inctype.value = "";
+    incamount.value = "";
+    updateDisplay();
+
+
+    }
+
+
+
+
+    function expense() {
+      ExpenseType = exptype.value
+      ExpenseAmount = parseFloat(expamt.value)
+
+      if (ExpenseType == "" || ExpenseAmount == 0) {
+        alert("please fill details")
+      }
+      totalExpense += ExpenseAmount;
+      localStorage.setItem("totaleexpense", totalExpense)
+
+      totalIncome -= ExpenseAmount;
+      localStorage.setItem("totalIncome", totalIncome)
+
+      if (totalExpense > totalIncome) {
+        alert("insufficient balance")
+
+      }
+      // exptype.value = ""
+      // expamt.value = ""
+      
+      alert("expense added successfully")
+
+      const now = new Date();
+    const dateStr = now.toLocaleString();
+    const row = document.createElement("tr");
+    row.innerHTML = `<td style="color: black;">${dateStr}</td>
+                     <td style="color: black;">${ExpenseType}</td>
+                     <td style="color: black;">₹${ExpenseAmount}</td>
+                     <td style="color: black;">₹${totalIncome}</td>`;
+    document.getElementById("allExpense").appendChild(row);
+
+    exptype.value = "";
+    expamt.value = "";
+    updateDisplay();
+
+    }
+    function clearall() {
+
+      totalIncome = 0;
+      totalExpense = 0;
+
+      localStorage.clear();
+
+      updateDisplay();
+
+      alert("All data cleared!");
+    }
+    function logout() {
+
+      window.location.href = "index.html";
+    }
+
+    
+  </script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
